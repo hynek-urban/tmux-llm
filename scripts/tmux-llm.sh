@@ -58,7 +58,7 @@ main() {
     temp_script=$(mktemp)
     cat > "$temp_script" << 'EOF'
 #!/bin/bash
-echo -n "🤖 Waiting..."
+echo -n "Waiting..."
 EOF
     
     # Add the command to pipe input to Python script
