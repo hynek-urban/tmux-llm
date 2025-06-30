@@ -125,10 +125,6 @@ def main() -> None:
     # Get configuration
     config = get_config()
 
-    if not config["api_key"]:
-        print("Error: TMUX_LLM_API_KEY environment variable not set", file=sys.stderr)
-        sys.exit(1)
-
     # Create request
     request = create_request(input_text, config)
 
