@@ -1,6 +1,6 @@
 # tmux-llm
 
-A minimalist tmux plugin to get quick reactions from an LLM assistant to the terminal window contents.
+A minimalist tmux plugin for getting quick responses to your terminal contents from an LLM assistant.
 
 Works with any openai-compatible API.
 
@@ -14,7 +14,7 @@ Created with the help of [Sculptor](https://imbue.com/product/sculptor/).
 3. The LLM response will appear in a popup window.
 4. Press any key to close the popup window.
 
-![demo](https://jumpshare.com/s/izk4uIMMorOdBSAkJWfk)
+![demo](https://files.catbox.moe/iqp5yq.gif)
 
 
 ## Installation
