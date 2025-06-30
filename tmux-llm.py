@@ -17,6 +17,7 @@ DEFAULT_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 DEFAULT_MODEL = "gpt-4o-mini"
 
 
+
 def get_config() -> Dict[str, str]:
     """Get configuration from environment variables with defaults."""
     return {
