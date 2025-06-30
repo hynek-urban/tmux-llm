@@ -42,75 +42,79 @@ class StreamingWrapper:
         self.width = width
         self.current_line = ""
         self.buffer = ""
-        self.line_start = True
+        self.last_output_len = 0
     
     def add_text(self, text: str) -> str:
         """Add text and return output to display immediately."""
         self.buffer += text
         output = ""
         
-        # Process character by character for better streaming
-        while self.buffer:
-            if self.buffer[0] == '\n':
+        # Process complete words and spaces
+        while " " in self.buffer or "\n" in self.buffer:
+            if "\n" in self.buffer:
                 # Handle explicit newlines
+                parts = self.buffer.split("\n", 1)
+                self.current_line += parts[0]
                 output += self._finish_current_line()
-                self.buffer = self.buffer[1:]
+                self.buffer = parts[1] if len(parts) > 1 else ""
                 self.current_line = ""
-                self.line_start = True
-            elif self.buffer[0] == ' ':
-                # Handle spaces
-                if len(self.current_line) >= self.width:
-                    # Line too long, wrap it
-                    output += self._finish_current_line()
-                    self.current_line = ""
-                    self.line_start = True
-                else:
-                    # Add space and show it
-                    self.current_line += self.buffer[0]
-                    output += self._show_partial_line()
-                self.buffer = self.buffer[1:]
+                self.last_output_len = 0
             else:
-                # Find next space or newline to get the whole word
-                word_end = 1
-                while (word_end < len(self.buffer) and 
-                       self.buffer[word_end] not in ' \n'):
-                    word_end += 1
-                
-                word = self.buffer[:word_end]
+                # Find next space to get complete word
+                space_idx = self.buffer.find(" ")
+                word_with_space = self.buffer[:space_idx + 1]
                 
                 # Check if adding this word would exceed width
-                if len(self.current_line + word) > self.width and self.current_line:
+                if len(self.current_line + word_with_space.strip()) > self.width and self.current_line.strip():
                     # Wrap the line
                     output += self._finish_current_line()
-                    self.current_line = word
-                    self.line_start = True
+                    self.current_line = word_with_space.strip()
+                    self.last_output_len = 0
                 else:
-                    self.current_line += word
+                    self.current_line += word_with_space
                 
-                # Show the updated line
-                output += self._show_partial_line()
-                self.buffer = self.buffer[word_end:]
+                # Show the updated line with streaming effect
+                output += self._show_current_line()
+                self.buffer = self.buffer[space_idx + 1:]
+        
+        # Show partial word if we have incomplete text at the end
+        if self.buffer and not self.buffer.isspace():
+            temp_line = self.current_line + self.buffer
+            if len(temp_line) <= self.width:
+                self.current_line = temp_line
+                output += self._show_current_line()
+                self.buffer = ""
         
         return output
     
     def finish(self) -> str:
         """Finish processing and return final line."""
+        if self.buffer:
+            self.current_line += self.buffer
         if self.current_line.strip():
             return self._finish_current_line()
         return ""
     
-    def _show_partial_line(self) -> str:
-        """Show current line with margin, overwriting previous."""
-        if self.line_start:
-            self.line_start = False
-            return f" {self.current_line}"
+    def _show_current_line(self) -> str:
+        """Show current line with margin, using carriage return for smooth updates."""
+        line_with_margin = f" {self.current_line.rstrip()}"
+        # Calculate how much of the line is new
+        if len(line_with_margin) > self.last_output_len:
+            new_part = line_with_margin[self.last_output_len:]
+            self.last_output_len = len(line_with_margin)
+            return new_part
         else:
-            return self.current_line[-1]  # Just show the new character
+            # Line was reset or shortened, show full line
+            self.last_output_len = len(line_with_margin)
+            return f"\r{line_with_margin}"
     
     def _finish_current_line(self) -> str:
         """Finish current line with margin and newline."""
         if self.current_line.strip():
-            return f"\r {self.current_line.strip()} \n"
+            result = f"\r {self.current_line.strip()} \n"
+            self.current_line = ""
+            self.last_output_len = 0
+            return result
         else:
             return "\n"
 
