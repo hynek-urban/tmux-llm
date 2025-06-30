@@ -7,6 +7,10 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PARENT_DIR="$(dirname "$CURRENT_DIR")"
 PYTHON_SCRIPT="$PARENT_DIR/tmux-llm.py"
 
+# Get popup dimensions from environment variables (set by tmux-llm.tmux)
+POPUP_WIDTH="${TMUX_LLM_POPUP_WIDTH:-90%}"
+POPUP_HEIGHT="${TMUX_LLM_POPUP_HEIGHT:-70%}"
+
 # Function to get selected text from tmux
 get_selected_text() {
     # Try to get selected text from copy buffer
@@ -68,7 +72,7 @@ EOF
     chmod +x "$temp_script"
     
     # Run in popup - no need for complex escaping since we're using temp files
-    tmux display-popup -w 90% -h 70% -E "bash '$temp_script'; rm -f '$temp_script'"
+    tmux display-popup -w "$POPUP_WIDTH" -h "$POPUP_HEIGHT" -E "bash '$temp_script'; rm -f '$temp_script'"
 }
 
 main "$@"

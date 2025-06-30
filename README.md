@@ -58,6 +58,10 @@ set -g @tmux-llm-api-endpoint 'https://api.openai.com/v1/chat/completions'
 
 # Set model (default: gpt-4o-mini)
 set -g @tmux-llm-model 'gpt-4o'
+
+# Customize popup dimensions (defaults: 90% width, 70% height)
+set -g @tmux-llm-popup-width '80%'
+set -g @tmux-llm-popup-height '60%'
 ```
 
 ## What gets actually sent to the LLM?
