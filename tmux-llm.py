@@ -7,7 +7,8 @@ Takes text from stdin and streams the response from an OpenAI-compatible API.
 import json
 import os
 import sys
-import urllib.error
+import textwrap
+import urllib.error  
 import urllib.request
 from typing import Any
 from typing import Dict
@@ -16,6 +17,75 @@ from typing import Iterator
 DEFAULT_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 DEFAULT_MODEL = "gpt-4o-mini"
 
+
+def get_fold_width() -> int:
+    """Calculate fold width from environment variables set by shell script."""
+    # Get terminal width
+    terminal_width = int(os.getenv("COLUMNS", "120"))
+    popup_width_str = os.getenv("TMUX_LLM_POPUP_WIDTH", "90%")
+    
+    if popup_width_str.endswith("%"):
+        percentage = int(popup_width_str[:-1])
+        popup_width = int(terminal_width * percentage / 100)
+    else:
+        popup_width = int(popup_width_str)
+    
+    # Account for margins and padding
+    fold_width = popup_width - 4
+    return max(40, fold_width)  # Minimum 40 chars
+
+
+class StreamingWrapper:
+    """Handle streaming text with word-boundary wrapping and margins."""
+    
+    def __init__(self, width: int):
+        self.width = width
+        self.current_line = ""
+        self.buffer = ""
+    
+    def add_text(self, text: str) -> str:
+        """Add text and return any complete wrapped lines."""
+        self.buffer += text
+        output = ""
+        
+        # Process complete words
+        while " " in self.buffer or "\n" in self.buffer:
+            if "\n" in self.buffer:
+                # Handle explicit newlines
+                parts = self.buffer.split("\n", 1)
+                self.current_line += parts[0]
+                output += self._finish_line()
+                self.buffer = parts[1] if len(parts) > 1 else ""
+                self.current_line = ""
+            else:
+                # Find next space
+                space_idx = self.buffer.find(" ")
+                word = self.buffer[:space_idx + 1]
+                
+                if len(self.current_line + word.strip()) > self.width:
+                    # Word would overflow, finish current line
+                    if self.current_line:
+                        output += self._finish_line()
+                        self.current_line = word.strip()
+                    else:
+                        # Single word longer than width, just add it
+                        self.current_line = word.strip()
+                else:
+                    self.current_line += word
+                
+                self.buffer = self.buffer[space_idx + 1:]
+        
+        return output
+    
+    def finish(self) -> str:
+        """Finish processing and return final line."""
+        if self.buffer:
+            self.current_line += self.buffer
+        return self._finish_line() if self.current_line else ""
+    
+    def _finish_line(self) -> str:
+        """Add margins and return completed line."""
+        return f" {self.current_line.strip()} \n"
 
 
 def get_config() -> Dict[str, str]:
@@ -123,18 +193,27 @@ def main() -> None:
         print("Error: No input text provided", file=sys.stderr)
         sys.exit(1)
 
-    # Get configuration
+    # Get configuration and setup wrapper
     config = get_config()
+    fold_width = get_fold_width()
+    wrapper = StreamingWrapper(fold_width)
 
     # Create request
     request = create_request(input_text, config)
 
-    # Stream response
+    # Stream response with wrapping
     try:
         for chunk in stream_response(request):
-            sys.stdout.write(chunk)
-            sys.stdout.flush()
-        print()  # Final newline
+            wrapped_output = wrapper.add_text(chunk)
+            if wrapped_output:
+                sys.stdout.write(wrapped_output)
+                sys.stdout.flush()
+        
+        # Output any remaining text
+        final_output = wrapper.finish()
+        if final_output:
+            sys.stdout.write(final_output)
+        
     except KeyboardInterrupt:
         print("\n\nInterrupted", file=sys.stderr)
         sys.exit(1)

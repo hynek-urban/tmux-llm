@@ -58,28 +58,9 @@ EOF
     printf '%s' "$input_text" > "$temp_input"
     
     # Add the command to pipe input from temp file to Python script with text wrapping
-    cat >> "$temp_script" << EOF
-# Calculate fold width based on popup dimensions
-TERMINAL_WIDTH=\$(tput cols)
-POPUP_WIDTH_VAL="$POPUP_WIDTH"
-if [[ "\$POPUP_WIDTH_VAL" == *% ]]; then
-    PERCENTAGE=\${POPUP_WIDTH_VAL%\\%}
-    FOLD_WIDTH=\$((TERMINAL_WIDTH * PERCENTAGE / 100 - 4))  # Account for margins and padding
-else
-    FOLD_WIDTH=\$((POPUP_WIDTH_VAL - 4))
-fi
-# Ensure minimum width
-FOLD_WIDTH=\$((FOLD_WIDTH < 40 ? 40 : FOLD_WIDTH))
-
-# Function to add margins to each line
-add_margins() {
-    while IFS= read -r line; do
-        printf " %s \\n" "\$line"
-    done
-}
-
-EOF
-    echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | { read -r first_line; echo -e '\\r\\033[K'; echo \"\$first_line\"; cat; } | fold -s -w \"\$FOLD_WIDTH\" | add_margins" >> "$temp_script"
+    echo "export COLUMNS=\$(tput cols)" >> "$temp_script"
+    echo "export TMUX_LLM_POPUP_WIDTH=\"$POPUP_WIDTH\"" >> "$temp_script"
+    echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | { read -r first_line; echo -e '\\r\\033[K'; echo \"\$first_line\"; cat; }" >> "$temp_script"
     
     # Add cleanup and footer
     cat >> "$temp_script" << EOF
