@@ -10,16 +10,16 @@ Created with the help of [Sculptor](https://imbue.com/product/sculptor/).
 ## Usage
 
 1. (Optionally) Select text in a tmux pane (copy mode).
-2. Press `Ctrl+G` (or your configured key binding)
-3. The LLM response will appear in a popup window
-4. Press any key to close the popup
+2. Press `Ctrl+G` (or your configured key binding).
+3. The LLM response will appear in a popup window.
+4. Press any key to close the popup window.
 
 
 ## Installation
 
 ### Using TPM (Tmux Plugin Manager)
 
-Add these lines to your `~/.tmux.conf` (don't forget to replace the API key with your actual API key):
+Add these lines to your `~/.tmux.conf` (ensure you replace the API key with your actual API key):
 
 ```bash
 set -g @plugin 'hynek-urban/tmux-llm'
@@ -41,12 +41,12 @@ Then press `prefix + I` to install.
    set -g @tmux-llm-api-key '<your-api-key>'
    ```
    
-   (Don't forget to replace the API key with your actual API key.)
+   (Ensure you replace the API key with your actual API key.)
 
 
 ## Configuration
 
-You can optionally customize the following options in `~/.tmux.conf`:
+You may customize the following options in `~/.tmux.conf`:
 
 ```bash
 
