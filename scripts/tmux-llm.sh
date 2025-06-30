@@ -21,17 +21,12 @@ get_selected_text() {
     echo "$selected_text"
 }
 
-# Function to display error in popup
-show_error() {
-    local error_msg="$1"
-    tmux display-popup -w 80 -h 10 -E "echo '$error_msg'; echo; echo 'Press any key to close...'; read -n 1"
-}
 
 # Main function
 main() {
     # Check if Python script exists
     if [ ! -f "$PYTHON_SCRIPT" ]; then
-        show_error "Error: tmux-llm.py script not found at $PYTHON_SCRIPT"
+        tmux display-popup -w 80 -h 10 -E "echo 'Error: tmux-llm.py script not found at $PYTHON_SCRIPT'; echo; echo 'Press any key to close...'; read -n 1"
         exit 1
     fi
     
@@ -40,18 +35,10 @@ main() {
     input_text=$(get_selected_text)
     
     if [ -z "$input_text" ]; then
-        show_error "Error: No text selected or captured from pane"
+        tmux display-popup -w 80 -h 10 -E "echo 'Error: No text selected or captured from pane'; echo; echo 'Press any key to close...'; read -n 1"
         exit 1
     fi
     
-    # Check if API key is configured
-    local api_key
-    api_key=$(tmux show-environment -g TMUX_LLM_API_KEY 2>/dev/null | cut -d= -f2-)
-    
-    if [ -z "$api_key" ]; then
-        show_error "Error: TMUX_LLM_API_KEY not configured. Set with: tmux set-option -g @tmux-llm-api-key 'your-api-key'"
-        exit 1
-    fi
     
     # Create a temporary script to run in the popup
     local temp_script
