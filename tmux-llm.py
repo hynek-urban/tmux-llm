@@ -33,9 +33,23 @@ def create_request(text: str, config: Dict[str, str]) -> urllib.request.Request:
         "Authorization": f'Bearer {config["api_key"]}',
     }
 
+    system_prompt = (
+        "You are an assistant designed to provide concise, helpful responses that will be displayed "
+        "in a small, non-interactive popup window (80 characters wide, 10 lines high). Your responses should be:\n\n"
+        "- Concise but complete (fit within the popup dimensions)\n"
+        "- Directly actionable when possible\n"
+        "- Complete and self-contained (no follow-up questions)\n"
+        "- Focused on the most likely helpful information\n\n"
+        "Do not ask for clarification or additional information. Work with what you're given and "
+        "provide the best possible answer based on the available context."
+    )
+
     payload = {
         "model": config["model"],
-        "messages": [{"role": "user", "content": text}],
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": text}
+        ],
         "stream": True,
         "temperature": 0.7,
     }
