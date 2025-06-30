@@ -24,7 +24,8 @@ get_selected_text() {
 # Function to display error in popup
 show_error() {
     local error_msg="$1"
-    tmux display-popup -w 80 -h 10 -E "echo '$error_msg'; echo; echo 'Press any key to close...'; read -n 1"
+    # Use printf with %q to properly quote the error message
+    tmux display-popup -w 80 -h 10 -E "printf %q '$error_msg' | xargs echo; echo; echo 'Press any key to close...'; read -n 1"
 }
 
 # Main function
@@ -77,7 +78,10 @@ EOF
     chmod +x "$temp_script"
     
     # Run in popup with the selected text as environment variable
-    tmux display-popup -w 90% -h 70% -E "INPUT_TEXT='$input_text' bash '$temp_script'; rm -f '$temp_script'"
+    # Use printf %q to properly escape the input text for shell
+    local escaped_input
+    escaped_input=$(printf %q "$input_text")
+    tmux display-popup -w 90% -h 70% -E "INPUT_TEXT=$escaped_input bash '$temp_script'; rm -f '$temp_script'"
 }
 
 main "$@"
