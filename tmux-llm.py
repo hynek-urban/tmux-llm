@@ -35,7 +35,7 @@ def create_request(text: str, config: Dict[str, str]) -> urllib.request.Request:
 
     system_prompt = (
         "You are an assistant designed to provide concise, helpful responses that will be displayed "
-        "in a small, non-interactive popup window (80 characters wide, 10 lines high). Your responses should be:\n\n"
+        "in a mid-sized, non-interactive popup window. Your responses should be:\n\n"
         "- Concise but complete (fit within the popup dimensions)\n"
         "- Directly actionable when possible\n"
         "- Complete and self-contained (no follow-up questions)\n"
