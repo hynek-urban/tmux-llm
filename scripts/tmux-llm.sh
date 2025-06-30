@@ -48,21 +48,27 @@ main() {
 echo -n "Waiting..."
 EOF
     
-    # Add the command to pipe input to Python script
-    echo "echo \"\$INPUT_TEXT\" | python3 \"$PYTHON_SCRIPT\" | { read -r first_line; echo -e '\r\033[K'; echo \"\$first_line\"; cat; }" >> "$temp_script"
+    # Create a temporary file for the input text to avoid shell escaping issues
+    local temp_input
+    temp_input=$(mktemp)
+    printf '%s' "$input_text" > "$temp_input"
     
-    # Add footer
-    cat >> "$temp_script" << 'EOF'
+    # Add the command to pipe input from temp file to Python script.
+    echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | { read -r first_line; echo -e '\\r\\033[K'; echo \"\$first_line\"; cat; }" >> "$temp_script"
+    
+    # Add cleanup and footer
+    cat >> "$temp_script" << EOF
 echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Press any key to close..."
 read -n 1
+rm -f "$temp_input"
 EOF
     
     chmod +x "$temp_script"
     
-    # Run in popup with the selected text as environment variable
-    tmux display-popup -w 90% -h 70% -E "INPUT_TEXT='$input_text' bash '$temp_script'; rm -f '$temp_script'"
+    # Run in popup - no need for complex escaping since we're using temp files
+    tmux display-popup -w 90% -h 70% -E "bash '$temp_script'; rm -f '$temp_script'"
 }
 
 main "$@"
