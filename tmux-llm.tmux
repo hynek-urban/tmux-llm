@@ -39,10 +39,8 @@ main() {
     tmux set-environment -g TMUX_LLM_MODEL "$model"
     tmux set-environment -g TMUX_LLM_API_KEY "$api_key"
     
-    # Bind the key with error checking - show popup if API key not configured
-    tmux bind-key -n "$key_binding" if-shell '[ -n "$(tmux show-environment -g TMUX_LLM_API_KEY 2>/dev/null | cut -d= -f2-)" ]' \
-        "run-shell 'bash $CURRENT_DIR/scripts/tmux-llm.sh'" \
-        "display-popup -w 80 -h 10 -E 'echo \"Error: TMUX_LLM_API_KEY not configured.\"; echo \"Set with: tmux set-option -g @tmux-llm-api-key \\"your-api-key\\"\"; echo; echo \"Press any key to close...\"; read -n 1'"
+    # Bind the key to the shell script
+    tmux bind-key -n "$key_binding" run-shell "bash $CURRENT_DIR/scripts/tmux-llm.sh"
 }
 
 main

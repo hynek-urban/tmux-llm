@@ -21,7 +21,6 @@ get_selected_text() {
     echo "$selected_text"
 }
 
-# Error handling is now done with direct tmux display-popup calls
 
 # Main function
 main() {
@@ -40,7 +39,6 @@ main() {
         exit 1
     fi
     
-    # API key check is now handled at the tmux binding level
     
     # Create a temporary script to run in the popup
     local temp_script
