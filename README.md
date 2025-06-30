@@ -77,9 +77,8 @@ When you select text in tmux in copy-mode then the selected text
 is exactly what is sent to the LLM (aside from a generic system
 prompt).
 
-When you don't explicitly select text, the last 50 lines get
-sent by default. You can change this by setting the
-@tmux-llm-terminal-history-length option.
+When you don't select text explicitly, the last 50 terminal
+lines get sent by default.
 
 Each invocation is isolated, there is no chat history.
 
