@@ -6,7 +6,7 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Default configuration
 default_key_binding="C-g"
 default_api_endpoint="https://api.openai.com/v1/chat/completions"
-default_model="gpt-3.5-turbo"
+default_model="gpt-4o-mini"
 
 # Get tmux option with default
 tmux_get_option() {
