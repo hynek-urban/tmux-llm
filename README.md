@@ -43,6 +43,11 @@ Then press `prefix + I` to install.
    
    (Ensure you replace the API key with your actual API key.)
 
+3. Reload your tmux config:
+   ```bash
+   tmux source-file ~/.tmux.conf
+   ```
+
 
 ## Configuration
 
