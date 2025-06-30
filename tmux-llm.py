@@ -8,7 +8,7 @@ import json
 import os
 import sys
 import textwrap
-import urllib.error  
+import urllib.error
 import urllib.request
 from typing import Any
 from typing import Dict
@@ -22,33 +22,25 @@ def get_fold_width() -> int:
     """Calculate fold width from environment variables set by shell script."""
     # Get terminal width
     terminal_width = int(os.getenv("COLUMNS", "120"))
-    popup_width_str = os.getenv("TMUX_LLM_POPUP_WIDTH", "90%")
-    
-    if popup_width_str.endswith("%"):
-        percentage = int(popup_width_str[:-1])
-        popup_width = int(terminal_width * percentage / 100)
-    else:
-        popup_width = int(popup_width_str)
-    
     # Account for margins and padding
-    fold_width = popup_width - 4
+    fold_width = terminal_width - 4
     return max(40, fold_width)  # Minimum 40 chars
 
 
 class StreamingWrapper:
     """Handle streaming text with word-boundary wrapping and margins."""
-    
+
     def __init__(self, width: int):
         self.width = width
         self.current_line = ""
         self.buffer = ""
         self.last_output_len = 0
-    
+
     def add_text(self, text: str) -> str:
         """Add text and return output to display immediately."""
         self.buffer += text
         output = ""
-        
+
         # Process complete words and spaces
         while " " in self.buffer or "\n" in self.buffer:
             if "\n" in self.buffer:
@@ -64,7 +56,7 @@ class StreamingWrapper:
                 space_idx = self.buffer.find(" ")
                 word_with_space = self.buffer[:space_idx + 1]
                 word_only = word_with_space.rstrip()
-                
+
                 # Check if adding this word would exceed width
                 if len(self.current_line + word_only) > self.width and self.current_line.strip():
                     # Wrap the line
@@ -73,11 +65,11 @@ class StreamingWrapper:
                     self.last_output_len = 0
                 else:
                     self.current_line += word_with_space
-                
+
                 # Show the updated line with streaming effect
                 output += self._show_current_line()
                 self.buffer = self.buffer[space_idx + 1:]
-        
+
         # Show partial word if we have incomplete text at the end
         if self.buffer and not self.buffer.isspace():
             temp_line = self.current_line + self.buffer
@@ -85,9 +77,9 @@ class StreamingWrapper:
                 self.current_line = temp_line
                 output += self._show_current_line()
                 self.buffer = ""
-        
+
         return output
-    
+
     def finish(self) -> str:
         """Finish processing and return final line."""
         if self.buffer:
@@ -95,7 +87,7 @@ class StreamingWrapper:
         if self.current_line.strip():
             return self._finish_current_line()
         return ""
-    
+
     def _show_current_line(self) -> str:
         """Show current line with margin, using carriage return for smooth updates."""
         line_with_margin = f" {self.current_line.rstrip()}"
@@ -108,7 +100,7 @@ class StreamingWrapper:
             # Line was reset or shortened, show full line
             self.last_output_len = len(line_with_margin)
             return f"\r{line_with_margin}"
-    
+
     def _finish_current_line(self) -> str:
         """Finish current line with margin and newline."""
         if self.current_line.strip():
@@ -240,12 +232,12 @@ def main() -> None:
             if wrapped_output:
                 sys.stdout.write(wrapped_output)
                 sys.stdout.flush()
-        
+
         # Output any remaining text
         final_output = wrapper.finish()
         if final_output:
             sys.stdout.write(final_output)
-        
+
     except KeyboardInterrupt:
         print("\n\nInterrupted", file=sys.stderr)
         sys.exit(1)

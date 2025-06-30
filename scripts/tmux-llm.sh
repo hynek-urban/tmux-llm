@@ -59,14 +59,13 @@ EOF
     
     # Add the command to pipe input from temp file to Python script with text wrapping
     echo "export COLUMNS=\$(tput cols)" >> "$temp_script"
-    echo "export TMUX_LLM_POPUP_WIDTH=\"$POPUP_WIDTH\"" >> "$temp_script"
     echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | { echo -e '\\r\\033[K'; cat; }" >> "$temp_script"
     
     # Add cleanup and footer
     cat >> "$temp_script" << EOF
 echo
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Press any key to close..."
+echo " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo " Press any key to close..."
 read -n 1
 rm -f "$temp_input"
 EOF
