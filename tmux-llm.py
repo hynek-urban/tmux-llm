@@ -63,12 +63,13 @@ class StreamingWrapper:
                 # Find next space to get complete word
                 space_idx = self.buffer.find(" ")
                 word_with_space = self.buffer[:space_idx + 1]
+                word_only = word_with_space.rstrip()
                 
                 # Check if adding this word would exceed width
-                if len(self.current_line + word_with_space.strip()) > self.width and self.current_line.strip():
+                if len(self.current_line + word_only) > self.width and self.current_line.strip():
                     # Wrap the line
                     output += self._finish_current_line()
-                    self.current_line = word_with_space.strip()
+                    self.current_line = word_only + " "  # Keep the space for the next word
                     self.last_output_len = 0
                 else:
                     self.current_line += word_with_space
