@@ -7,7 +7,7 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PYTHON_SCRIPT="$CURRENT_DIR/tmux-llm.py"
 
 # Get popup dimensions from environment variables (set by tmux-llm.tmux)
-POPUP_WIDTH="${TMUX_LLM_POPUP_WIDTH:-90%}"
+POPUP_WIDTH="${TMUX_LLM_POPUP_WIDTH:-70%}"
 POPUP_HEIGHT="${TMUX_LLM_POPUP_HEIGHT:-70%}"
 
 # Function to get selected text from tmux
