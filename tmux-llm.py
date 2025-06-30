@@ -57,8 +57,8 @@ class StreamingWrapper:
                 word_with_space = self.buffer[:space_idx + 1]
                 word_only = word_with_space.rstrip()
 
-                # Check if adding this word would exceed width
-                if len(self.current_line + word_only) > self.width and self.current_line.strip():
+                # Check if adding this word would exceed width (accounting for both margins)
+                if len(self.current_line + word_only) > self.width - 4 and self.current_line.strip():
                     # Wrap the line
                     output += self._finish_current_line()
                     self.current_line = word_only + " "  # Keep the space for the next word
@@ -73,7 +73,7 @@ class StreamingWrapper:
         # Show partial word if we have incomplete text at the end
         if self.buffer and not self.buffer.isspace():
             temp_line = self.current_line + self.buffer
-            if len(temp_line) <= self.width:
+            if len(temp_line) <= self.width - 4:  # Account for both margins
                 self.current_line = temp_line
                 output += self._show_current_line()
                 self.buffer = ""
