@@ -22,8 +22,8 @@ Created with the help of [Sculptor](https://imbue.com/product/sculptor/).
 Add these lines to your `~/.tmux.conf` (ensure you replace the API key with your actual API key):
 
 ```bash
-set -g @plugin 'hynek-urban/tmux-llm'
 set -g @tmux-llm-api-key '<your-api-key>'
+set -g @plugin 'hynek-urban/tmux-llm'
 ```
 
 Then press `prefix + I` to install.
@@ -37,8 +37,8 @@ Then press `prefix + I` to install.
 
 2. Add these lines to your `~/.tmux.conf`:
    ```bash
-   run-shell 'bash ~/.tmux/plugins/tmux-llm/plugin.tmux'
    set -g @tmux-llm-api-key '<your-api-key>'
+   run-shell 'bash ~/.tmux/plugins/tmux-llm/plugin.tmux'
    ```
    
    (Ensure you replace the API key with your actual API key.)
