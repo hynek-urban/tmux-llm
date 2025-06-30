@@ -58,13 +58,11 @@ main() {
     temp_script=$(mktemp)
     cat > "$temp_script" << 'EOF'
 #!/bin/bash
-echo "🤖 Processing your request..."
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo
+echo -n "🤖 Waiting..."
 EOF
     
     # Add the command to pipe input to Python script
-    echo "echo \"\$INPUT_TEXT\" | python3 \"$PYTHON_SCRIPT\"" >> "$temp_script"
+    echo "echo \"\$INPUT_TEXT\" | python3 \"$PYTHON_SCRIPT\" | { read -r first_line; echo -e '\r\033[K'; echo \"\$first_line\"; cat; }" >> "$temp_script"
     
     # Add footer
     cat >> "$temp_script" << 'EOF'
