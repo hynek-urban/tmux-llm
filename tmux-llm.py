@@ -42,7 +42,8 @@ def create_request(text: str, config: Dict[str, str]) -> urllib.request.Request:
         "- Focused on the most likely helpful information\n\n"
         "Do not ask for clarification or additional information. Work with what you're given and "
         "provide the best possible answer based on the available context.\n\n"
-        "Never provide lists, bullet points, or numbered items of more than three items. Be very concise!"
+        "Never provide lists, bullet points, or numbered items with more than three items. "
+        "Use short sentences and paragraphs. Be very consise!"
     )
 
     payload = {
