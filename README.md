@@ -4,6 +4,8 @@ A minimalist tmux plugin to get quick reactions from an LLM assistant to the ter
 
 Works with any openai-compatible API.
 
+Created with the help of [Sculptor](https://imbue.com/product/sculptor/).
+
 
 ## Usage
 
