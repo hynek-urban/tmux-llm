@@ -24,8 +24,18 @@ get_selected_text() {
 # Function to display error in popup
 show_error() {
     local error_msg="$1"
-    # Use printf with %q to properly quote the error message
-    tmux display-popup -w 80 -h 10 -E "printf %q '$error_msg' | xargs echo; echo; echo 'Press any key to close...'; read -n 1"
+    # Create a temporary script to avoid shell escaping issues
+    local temp_error_script
+    temp_error_script=$(mktemp)
+    cat > "$temp_error_script" << EOF
+#!/bin/bash
+printf '%s\n' $(printf %q "$error_msg")
+echo
+echo 'Press any key to close...'
+read -n 1
+EOF
+    chmod +x "$temp_error_script"
+    tmux display-popup -w 80 -h 10 -E "bash '$temp_error_script'; rm -f '$temp_error_script'"
 }
 
 # Main function
@@ -64,24 +74,27 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo
 EOF
     
-    # Add the command to pipe input to Python script
-    echo "echo \"\$INPUT_TEXT\" | python3 \"$PYTHON_SCRIPT\"" >> "$temp_script"
+    # Create a temporary file for the input text to avoid shell escaping issues
+    local temp_input
+    temp_input=$(mktemp)
+    printf '%s' "$input_text" > "$temp_input"
     
-    # Add footer
-    cat >> "$temp_script" << 'EOF'
+    # Add the command to pipe input from temp file to Python script
+    echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\"" >> "$temp_script"
+    
+    # Add cleanup and footer
+    cat >> "$temp_script" << EOF
 echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Press any key to close..."
 read -n 1
+rm -f "$temp_input"
 EOF
     
     chmod +x "$temp_script"
     
-    # Run in popup with the selected text as environment variable
-    # Use printf %q to properly escape the input text for shell
-    local escaped_input
-    escaped_input=$(printf %q "$input_text")
-    tmux display-popup -w 90% -h 70% -E "INPUT_TEXT=$escaped_input bash '$temp_script'; rm -f '$temp_script'"
+    # Run in popup - no need for complex escaping since we're using temp files
+    tmux display-popup -w 90% -h 70% -E "bash '$temp_script'; rm -f '$temp_script'"
 }
 
 main "$@"
