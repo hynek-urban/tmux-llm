@@ -48,7 +48,7 @@ main() {
     tmux set-environment -g TMUX_LLM_POPUP_HEIGHT "$popup_height"
     
     # Bind the key to the shell script
-    tmux bind-key -n "$key_binding" run-shell "bash $CURRENT_DIR/scripts/tmux-llm.sh"
+    tmux bind-key -n "$key_binding" run-shell "bash $CURRENT_DIR/tmux-llm.sh"
 }
 
 main
