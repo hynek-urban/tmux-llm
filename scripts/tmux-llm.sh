@@ -73,11 +73,12 @@ EOF
     echo "export COLUMNS=\$(tput cols)" >> "$temp_script"
     # Pipe to less to get scrolling.
     echo "
+    set -e
     temp_output=\$(mktemp)
     python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | { read -n 1 -r first_line; echo -e '\\r\\033[K'; { echo -n \"\$first_line\"; cat; } | tee \"\$temp_output\"; }
     clear
     echo
-    less -R \"\$temp_output\"
+    LESS=\"-P press 'q' to close\" less -R \"\$temp_output\"
     rm -f \"\$temp_output\"
     " >> "$temp_script"
     # echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | less" >> "$temp_script"
