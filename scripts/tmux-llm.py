@@ -13,6 +13,8 @@ import urllib.request
 from typing import Any
 from typing import Dict
 from typing import Iterator
+from typing import Tuple
+from typing import List
 
 DEFAULT_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 DEFAULT_MODEL = "gpt-4o-mini"
@@ -32,84 +34,70 @@ class StreamingWrapper:
 
     def __init__(self, width: int):
         self.width = width
-        self.current_line = ""
         self.buffer = ""
-        self.last_output_len = 0
+        self.current_column = 0
 
-    def add_text(self, text: str) -> str:
-        """Add text and return output to display immediately."""
-        self.buffer += text
-        output = ""
+    # TODO: Fix this, this still isn't right (at all).
+    def add_chunk(self, chunk: str) -> str:
+        """
+        Add a chunk of text and return all the output that can already be shown.
 
-        # Process complete words and spaces
-        while " " in self.buffer or "\n" in self.buffer:
-            if "\n" in self.buffer:
-                # Handle explicit newlines
-                parts = self.buffer.split("\n", 1)
-                self.current_line += parts[0]
-                output += self._finish_current_line()
-                self.buffer = parts[1] if len(parts) > 1 else ""
-                self.current_line = ""
-                self.last_output_len = 0
+        Wrap text to fit within the specified width, handling word boundaries.
+
+        Don't show potentially incomplete words - keep them in the buffer, waiting for the next chunk .
+
+        """
+        self.buffer += chunk
+        output: str = ""
+        current_line = ""
+        current_word_or_separator = ""
+        is_in_word = False
+        added_newlines = 0
+
+        with open("/tmp/tmux-llm.log", "w") as log_file:
+            for i, char in enumerate(self.buffer):
+                is_space = char.isspace()
+                if i == 0:
+                    is_in_word = not is_space
+                if i > 0 and is_space and is_in_word:
+                    current_line += current_word_or_separator
+                    current_word_or_separator = ""
+                    is_in_word = False
+                elif i > 0 and not is_space and not is_in_word:
+                    current_line += current_word_or_separator
+                    current_word_or_separator = ""
+                    is_in_word = True
+
+                current_word_or_separator += char
+                is_newline = char == "\n"
+                if is_newline:
+                    output += current_line + current_word_or_separator
+                    current_line = ""
+                    current_word_or_separator = ""
+                    self.current_column = 0
+                if current_line and (self.current_column + (len(current_line) + len(current_word_or_separator)) > self.width - 4):
+                    # If adding this word would exceed the width, finish current line.
+                    output += current_line + "\n"
+                    current_line = ""
+                    self.current_column = 0
+                    added_newlines += 1
+
+            log_file.write(current_line + "\n")
+
+            # Add all remaining complete words and separators to the output.
+            if current_line:
+                output += current_line
+                self.current_column = self.current_column + len(current_line)
             else:
-                # Find next space to get complete word
-                space_idx = self.buffer.find(" ")
-                word_with_space = self.buffer[:space_idx + 1]
-                word_only = word_with_space.rstrip()
+                self.current_column = 0
 
-                # Check if adding this word would exceed width (accounting for both margins)
-                if len(self.current_line + word_only) > self.width - 4 and self.current_line.strip():
-                    # Wrap the line
-                    output += self._finish_current_line()
-                    self.current_line = word_only + " "  # Keep the space for the next word
-                    self.last_output_len = 0
-                else:
-                    self.current_line += word_with_space
-
-                # Show the updated line with streaming effect
-                output += self._show_current_line()
-                self.buffer = self.buffer[space_idx + 1:]
-
-        # Show partial word if we have incomplete text at the end
-        if self.buffer and not self.buffer.isspace():
-            temp_line = self.current_line + self.buffer
-            if len(temp_line) <= self.width - 4:  # Account for both margins
-                self.current_line = temp_line
-                output += self._show_current_line()
-                self.buffer = ""
-
-        return output
+            self.buffer = self.buffer[len(output)-added_newlines:]  # Keep only the remaining buffer
+            return output
 
     def finish(self) -> str:
         """Finish processing and return final line."""
-        if self.buffer:
-            self.current_line += self.buffer
-        if self.current_line.strip():
-            return self._finish_current_line()
-        return ""
+        return self.buffer
 
-    def _show_current_line(self) -> str:
-        """Show current line with margin, using carriage return for smooth updates."""
-        line_with_margin = f" {self.current_line.rstrip()}"
-        # Calculate how much of the line is new
-        if len(line_with_margin) > self.last_output_len:
-            new_part = line_with_margin[self.last_output_len:]
-            self.last_output_len = len(line_with_margin)
-            return new_part
-        else:
-            # Line was reset or shortened, show full line
-            self.last_output_len = len(line_with_margin)
-            return f"\r{line_with_margin}"
-
-    def _finish_current_line(self) -> str:
-        """Finish current line with margin and newline."""
-        if self.current_line.strip():
-            result = f"\r {self.current_line.strip()} \n"
-            self.current_line = ""
-            self.last_output_len = 0
-            return result
-        else:
-            return "\n"
 
 
 def get_config() -> Dict[str, str]:
@@ -228,7 +216,7 @@ def main() -> None:
     # Stream response with wrapping
     try:
         for chunk in stream_response(request):
-            wrapped_output = wrapper.add_text(chunk)
+            wrapped_output = wrapper.add_chunk(chunk)
             if wrapped_output:
                 sys.stdout.write(wrapped_output)
                 sys.stdout.flush()
