@@ -12,11 +12,18 @@ POPUP_HEIGHT="${TMUX_LLM_POPUP_HEIGHT:-70%}"
 
 # Function to get selected text from tmux
 get_selected_text() {
-    # Try to get selected text from copy buffer
-    local selected_text
-    selected_text=$(tmux show-buffer 2>/dev/null || echo "")
+    # Check if there's currently selected text in copy mode
+    local selection_present
+    selection_present=$(tmux display-message -p "#{selection_present}" 2>/dev/null || echo "0")
     
-    # If no selection, get the current pane content (last 50 lines)
+    local selected_text=""
+    
+    # Only use buffer if there's an active selection
+    if [ "$selection_present" = "1" ]; then
+        selected_text=$(tmux show-buffer 2>/dev/null || echo "")
+    fi
+    
+    # If no active selection or buffer is empty, get the current pane content (last 50 lines)
     if [ -z "$selected_text" ]; then
         selected_text=$(tmux capture-pane -p -S -50)
     fi
