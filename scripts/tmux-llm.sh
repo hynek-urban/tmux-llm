@@ -71,7 +71,9 @@ EOF
     
     # Add the command to pipe input from temp file to Python script with text wrapping
     echo "export COLUMNS=\$(tput cols)" >> "$temp_script"
-    echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | { read -r first_line; echo -e '\\r\\033[K'; echo \"\$first_line\"; cat; }" >> "$temp_script"
+    # Pipe to less to get scrolling.
+    echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | { read -n 1 -r first_line; echo -e '\\r\\033[K'; { echo -n \"\$first_line\"; cat; } | less; }" >> "$temp_script"
+    # echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | less" >> "$temp_script"
     
     # Add cleanup and footer
     cat >> "$temp_script" << EOF
