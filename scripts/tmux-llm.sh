@@ -18,9 +18,15 @@ get_selected_text() {
     
     local selected_text=""
     
-    # Only use buffer if there's an active selection
+    # If there's an active selection, capture the currently selected text directly  
     if [ "$selection_present" = "1" ]; then
-        selected_text=$(tmux show-buffer 2>/dev/null || echo "")
+        # Get the selection coordinates
+        local sel_start_y sel_end_y
+        sel_start_y=$(tmux display-message -p "#{selection_start_y}" 2>/dev/null || echo "0")
+        sel_end_y=$(tmux display-message -p "#{selection_end_y}" 2>/dev/null || echo "0")
+        
+        # Capture the selected lines
+        selected_text=$(tmux capture-pane -p -S "$sel_start_y" -E "$sel_end_y" 2>/dev/null || echo "")
     fi
     
     # If no active selection or buffer is empty, get the current pane content (last 50 lines)
