@@ -36,8 +36,9 @@ class StreamingWrapper:
         self.width = width
         self.buffer = ""
         self.current_column = 0
+        self.is_first_chunk_added = False
 
-    # TODO: Make this right. Add margins.
+    # TODO: Make this right.
     def add_chunk(self, chunk: str) -> str:
         """
         Add a chunk of text and return all the output that can already be shown.
@@ -54,11 +55,18 @@ class StreamingWrapper:
         is_in_word = False
         added_characters = 0
 
+        if not self.is_first_chunk_added:
+            output += " "
+            added_characters += 1
+
         for i, char in enumerate(self.buffer):
             is_space = char.isspace()
             if i == 0:
                 is_in_word = not is_space
             if i > 0 and is_space and is_in_word:
+                if self.current_column == 0:
+                    current_line += " "
+                    added_characters += 1
                 current_line += current_word_or_separator
                 current_word_or_separator = ""
                 is_in_word = False
@@ -89,6 +97,7 @@ class StreamingWrapper:
         #    self.current_column = 0
 
         self.buffer = self.buffer[len(output)-added_characters:]  # Keep only the remaining buffer
+        self.is_first_chunk_added = True
         return output
 
     def finish(self) -> str:
