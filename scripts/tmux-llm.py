@@ -37,14 +37,14 @@ class StreamingWrapper:
         self.buffer = ""
         self.current_column = 0
 
-    # TODO: Fix this, this still isn't right (at all).
+    # TODO: Make this right. Add margins.
     def add_chunk(self, chunk: str) -> str:
         """
         Add a chunk of text and return all the output that can already be shown.
 
         Wrap text to fit within the specified width, handling word boundaries.
 
-        Don't show potentially incomplete words - keep them in the buffer, waiting for the next chunk .
+        Don't show potentially incomplete words - keep them in the buffer, waiting for the next chunk.
 
         """
         self.buffer += chunk
@@ -52,47 +52,44 @@ class StreamingWrapper:
         current_line = ""
         current_word_or_separator = ""
         is_in_word = False
-        added_newlines = 0
+        added_characters = 0
 
-        with open("/tmp/tmux-llm.log", "w") as log_file:
-            for i, char in enumerate(self.buffer):
-                is_space = char.isspace()
-                if i == 0:
-                    is_in_word = not is_space
-                if i > 0 and is_space and is_in_word:
-                    current_line += current_word_or_separator
-                    current_word_or_separator = ""
-                    is_in_word = False
-                elif i > 0 and not is_space and not is_in_word:
-                    current_line += current_word_or_separator
-                    current_word_or_separator = ""
-                    is_in_word = True
+        for i, char in enumerate(self.buffer):
+            is_space = char.isspace()
+            if i == 0:
+                is_in_word = not is_space
+            if i > 0 and is_space and is_in_word:
+                current_line += current_word_or_separator
+                current_word_or_separator = ""
+                is_in_word = False
+            elif i > 0 and not is_space and not is_in_word:
+                current_line += current_word_or_separator
+                current_word_or_separator = ""
+                is_in_word = True
 
-                current_word_or_separator += char
-                is_newline = char == "\n"
-                if is_newline:
-                    output += current_line + current_word_or_separator
-                    current_line = ""
-                    current_word_or_separator = ""
-                    self.current_column = 0
-                if current_line and (self.current_column + (len(current_line) + len(current_word_or_separator)) > self.width - 4):
-                    # If adding this word would exceed the width, finish current line.
-                    output += current_line + "\n"
-                    current_line = ""
-                    self.current_column = 0
-                    added_newlines += 1
-
-            log_file.write(current_line + "\n")
-
-            # Add all remaining complete words and separators to the output.
-            if current_line:
-                output += current_line
-                self.current_column = self.current_column + len(current_line)
-            else:
+            current_word_or_separator += char
+            is_newline = char == "\n"
+            if is_newline:
+                output += current_line + current_word_or_separator
+                current_line = ""
+                current_word_or_separator = ""
                 self.current_column = 0
+            if current_line and ((self.current_column + len(current_line) + len(current_word_or_separator)) > self.width - 4):
+                # If adding this word would exceed the width, finish current line.
+                output += current_line + "\n"
+                current_line = ""
+                self.current_column = 0
+                added_characters += 1
 
-            self.buffer = self.buffer[len(output)-added_newlines:]  # Keep only the remaining buffer
-            return output
+        # Add all remaining complete words and separators to the output.
+        if current_line:
+            output += current_line
+            self.current_column = self.current_column + len(current_line)
+        #else:
+        #    self.current_column = 0
+
+        self.buffer = self.buffer[len(output)-added_characters:]  # Keep only the remaining buffer
+        return output
 
     def finish(self) -> str:
         """Finish processing and return final line."""
