@@ -82,7 +82,7 @@ class StreamingWrapper:
                 current_line = ""
                 current_word_or_separator = ""
                 self.current_column = 0
-            if current_line and ((self.current_column + len(current_line) + len(current_word_or_separator)) > self.width + 2):
+            if current_line and ((self.current_column + len(current_line) + len(current_word_or_separator)) > self.width):
                 # If adding this word would exceed the width, finish current line.
                 output += current_line + "\n"
                 current_line = ""
