@@ -75,12 +75,8 @@ EOF
     echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | { read -n 1 -r first_line; echo -e '\\r\\033[K'; { echo -n \"\$first_line\"; cat; } | less; }" >> "$temp_script"
     # echo "python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | less" >> "$temp_script"
     
-    # Add cleanup and footer
+    # Add cleanup
     cat >> "$temp_script" << EOF
-echo
-echo " ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo " Press any key to close..."
-read -n 1
 rm -f "$temp_input"
 EOF
     
