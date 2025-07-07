@@ -29,12 +29,9 @@ get_selected_text() {
         selected_text=$(tmux capture-pane -p -S "$sel_start_y" -E "$sel_end_y" 2>/dev/null || echo "")
     fi
     
-    # If no active selection or buffer is empty, get the current pane content (terminal height lines)
+    # If no active selection or buffer is empty, get the current pane content (visible content)
     if [ -z "$selected_text" ]; then
-        # Get the terminal height
-        local terminal_height
-        terminal_height=$(tmux display-message -p "#{pane_height}" 2>/dev/null || echo "50")
-        selected_text=$(tmux capture-pane -p -S -"$terminal_height")
+        selected_text=$(tmux capture-pane -p)
     fi
     
     echo "$selected_text"
