@@ -77,8 +77,8 @@ When you select text in tmux in copy-mode then the selected text
 is exactly what is sent to the LLM (aside from a generic system
 prompt).
 
-When you don't select text explicitly, the last 50 terminal
-lines get sent by default.
+When you don't select text explicitly, the current terminal
+height's worth of lines get sent by default.
 
 Each invocation is isolated, there is no chat history.
 
