@@ -142,7 +142,8 @@ def create_request(text: str, config: Dict[str, str]) -> urllib.request.Request:
             {"role": "user", "content": text}
         ],
         "stream": True,
-        "temperature": 0.0,
+        # NOTE: Do not explicitly set temperature since it's not supported by all models (e.g. gpt-5-mini).
+        # "temperature": 0.0,
     }
 
     data = json.dumps(payload).encode("utf-8")
