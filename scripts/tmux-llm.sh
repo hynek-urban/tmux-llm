@@ -47,13 +47,19 @@ EOF
     
     # Add the command to pipe input from temp file to Python script with text wrapping
     echo "export COLUMNS=\$(tput cols)" >> "$temp_script"
-    # Pipe to less to get scrolling.
     echo "
-    set -e
     temp_output=\$(mktemp)
-    python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" | { read -n 1 -r first_line; echo -e '\\r\\033[K'; { echo -n \"\$first_line\"; cat; } | tee \"\$temp_output\"; }
-    LESS=\"-P press 'q' to close\" less -R +1 \"\$temp_output\"
+    temp_output_stderr=\$(mktemp)
+    # Show the intermediate output as it's streamed.
+    python3 \"$PYTHON_SCRIPT\" < \"$temp_input\" 2>\$temp_output_stderr | { read -n 1 -r first_line; echo -e '\\r\\033[K'; { echo -n \"\$first_line\"; cat; } | tee \"\$temp_output\"; }
+    # Finally, pipe the result to less to get scrolling.
+    if [ -s \"\$temp_output_stderr\" ]; then
+      LESS=\"-P press 'q' to close\" less \"\$temp_output_stderr\"
+    else
+      LESS=\"-P press 'q' to close\" less -R +1 \"\$temp_output\"
+    fi
     rm -f \"\$temp_output\"
+    rm -f \"\$temp_output_stderr\"
     " >> "$temp_script"
     
     # Add cleanup
