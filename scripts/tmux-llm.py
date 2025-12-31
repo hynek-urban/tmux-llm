@@ -130,7 +130,7 @@ def create_request(text: str, config: Dict[str, str]) -> urllib.request.Request:
         "- Concise but complete (you must fit roughly within 20 lines)\n"
         "- Directly actionable when possible\n"
         "- Complete and self-contained (no follow-up questions)\n"
-        "- Focused on the most likely helpful information\n\n"
+        "- Focused on the information most likely to be helpful\n\n"
         "Do not ask for clarification or additional information. Work with what you're given and "
         "provide the best possible answer based on the available context.\n\n"
         "Never provide lists, bullet points, or numbered items with more than three items. "
