@@ -71,6 +71,8 @@ set -g @tmux-llm-popup-width '80%'
 set -g @tmux-llm-popup-height '60%'
 ```
 
+Just make sure to place these option declarations before the main plugin invocation point.
+
 ## What gets actually sent to the LLM?
 
 When you select text in tmux in copy-mode then the selected text
