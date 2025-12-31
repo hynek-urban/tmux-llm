@@ -22,7 +22,6 @@ MODEL_ENV_VAR = "TMUX_LLM_MODEL"
 
 
 def get_fold_width() -> int:
-    """Calculate fold width from environment variables set by shell script."""
     # Get terminal width
     terminal_width = int(os.getenv("COLUMNS", "120"))
     # Account for margins and padding
@@ -135,7 +134,7 @@ def create_request(text: str, config: Dict[str, str]) -> urllib.request.Request:
         "Do not ask for clarification or additional information. Work with what you're given and "
         "provide the best possible answer based on the available context.\n\n"
         "Never provide lists, bullet points, or numbered items with more than three items. "
-        "Use short sentences and paragraphs. Be very consise!"
+        "Use short sentences and paragraphs. Be very concise!"
     )
 
     payload = {
@@ -190,6 +189,7 @@ def stream_response(request: urllib.request.Request) -> Iterator[str]:
                         content = choices[0]["delta"].get("content", "")
                         if content:
                             yield content
+            assert not buffer.strip(), "Incomplete response received"
 
     except urllib.error.HTTPError as e:
         error_msg = f"HTTP Error {e.code}: {e.reason}"
