@@ -6,7 +6,7 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Default configuration
 default_key_binding="C-g"
 default_api_endpoint="https://api.openai.com/v1/chat/completions"
-default_model="gpt-5-mini"
+default_model="gpt-4.1-mini"
 default_popup_width="70%"
 default_popup_height="70%"
 

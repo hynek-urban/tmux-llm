@@ -63,7 +63,7 @@ set -g @tmux-llm-key 'C-g'
 # Set API endpoint (default: OpenAI)
 set -g @tmux-llm-api-endpoint 'https://api.openai.com/v1/chat/completions'
 
-# Set model (default: gpt-5-mini)
+# Set model (default: gpt-4.1-mini)
 set -g @tmux-llm-model 'gpt-5.2'
 
 # Customize popup dimensions (defaults: 90% width, 70% height)
