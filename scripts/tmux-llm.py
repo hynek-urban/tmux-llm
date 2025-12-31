@@ -17,7 +17,7 @@ from typing import Tuple
 from typing import List
 
 DEFAULT_ENDPOINT = "https://api.openai.com/v1/chat/completions"
-DEFAULT_MODEL = "gpt-4o-mini"
+DEFAULT_MODEL = "gpt-5-mini"
 
 
 def get_fold_width() -> int:

@@ -4,7 +4,7 @@ A minimalist tmux plugin for getting quick responses to your terminal contents f
 
 Works with any openai-compatible API.
 
-Created with the help of [Sculptor](https://imbue.com/product/sculptor/).
+Created with the help of [Sculptor](https://imbue.com/sculptor/).
 
 
 ## Usage
@@ -63,8 +63,8 @@ set -g @tmux-llm-key 'C-g'
 # Set API endpoint (default: OpenAI)
 set -g @tmux-llm-api-endpoint 'https://api.openai.com/v1/chat/completions'
 
-# Set model (default: gpt-4o-mini)
-set -g @tmux-llm-model 'gpt-4o'
+# Set model (default: gpt-5-mini)
+set -g @tmux-llm-model 'gpt-5.2'
 
 # Customize popup dimensions (defaults: 90% width, 70% height)
 set -g @tmux-llm-popup-width '80%'
@@ -82,5 +82,5 @@ height's worth of lines get sent by default.
 
 Each invocation is isolated, there is no chat history.
 
-If you need to provide some additional commentary to the LLM, do
+If you need to provide additional commentary to the LLM, do
 that by typing it directly in your terminal.
