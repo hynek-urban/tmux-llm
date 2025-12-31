@@ -16,8 +16,9 @@ from typing import Iterator
 from typing import Tuple
 from typing import List
 
-DEFAULT_ENDPOINT = "https://api.openai.com/v1/chat/completions"
-DEFAULT_MODEL = "gpt-4.1-mini"
+
+ENDPOINT_ENV_VAR = "TMUX_LLM_API_ENDPOINT"
+MODEL_ENV_VAR = "TMUX_LLM_MODEL"
 
 
 def get_fold_width() -> int:
@@ -107,10 +108,12 @@ class StreamingWrapper:
 
 
 def get_config() -> Dict[str, str]:
-    """Get configuration from environment variables with defaults."""
+    """Get configuration from environment variables."""
+    assert ENDPOINT_ENV_VAR in os.environ, f"{ENDPOINT_ENV_VAR} not set"
+    assert MODEL_ENV_VAR in os.environ, f"{MODEL_ENV_VAR} not set"
     return {
-        "api_endpoint": os.getenv("TMUX_LLM_API_ENDPOINT", DEFAULT_ENDPOINT),
-        "model": os.getenv("TMUX_LLM_MODEL", DEFAULT_MODEL),
+        "api_endpoint": os.environ[ENDPOINT_ENV_VAR],
+        "model": os.environ[MODEL_ENV_VAR],
         "api_key": os.getenv("TMUX_LLM_API_KEY", ""),
     }
 
