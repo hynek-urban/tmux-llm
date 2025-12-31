@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # tmux-llm shell wrapper script
-# This script extracts selected text from tmux and sends it to the Python script
+# This script extracts displayed or selected text from tmux and sends it to the Python script.
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PYTHON_SCRIPT="$CURRENT_DIR/tmux-llm.py"
@@ -9,33 +9,6 @@ PYTHON_SCRIPT="$CURRENT_DIR/tmux-llm.py"
 # Get popup dimensions from environment variables (set by tmux-llm.tmux)
 POPUP_WIDTH="${TMUX_LLM_POPUP_WIDTH:-70%}"
 POPUP_HEIGHT="${TMUX_LLM_POPUP_HEIGHT:-70%}"
-
-# Function to get selected text from tmux
-get_selected_text() {
-    # Check if there's currently selected text in copy mode
-    local selection_present
-    selection_present=$(tmux display-message -p "#{selection_present}" 2>/dev/null || echo "0")
-    
-    local selected_text=""
-    
-    # If there's an active selection, capture the currently selected text directly  
-    if [ "$selection_present" = "1" ]; then
-        # Get the selection coordinates
-        local sel_start_y sel_end_y
-        sel_start_y=$(tmux display-message -p "#{selection_start_y}" 2>/dev/null || echo "0")
-        sel_end_y=$(tmux display-message -p "#{selection_end_y}" 2>/dev/null || echo "0")
-        
-        # Capture the selected lines
-        selected_text=$(tmux capture-pane -p -S "$sel_start_y" -E "$sel_end_y" 2>/dev/null || echo "")
-    fi
-    
-    # If no active selection or buffer is empty, get the current pane content (visible content)
-    if [ -z "$selected_text" ]; then
-        selected_text=$(tmux capture-pane -p)
-    fi
-    
-    echo "$selected_text"
-}
 
 
 # Main function
@@ -45,11 +18,14 @@ main() {
         tmux display-popup -w 80 -h 10 -E "echo 'Error: tmux-llm.py script not found at $PYTHON_SCRIPT'; echo; echo 'Press any key to close...'; read -n 1"
         exit 1
     fi
-    
-    # Get selected text
+
+    # Get the input_text: either from the stdin (when selected) or the whole pane.
     local input_text
-    input_text=$(get_selected_text)
-    
+    input_text=$(cat)
+    if [ -z "$input_text" ]; then
+      input_text=$(tmux capture-pane -p)
+    fi
+
     if [ -z "$input_text" ]; then
         tmux display-popup -w 80 -h 10 -E "echo 'Error: No text selected or captured from pane'; echo; echo 'Press any key to close...'; read -n 1"
         exit 1
