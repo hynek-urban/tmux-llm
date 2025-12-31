@@ -142,7 +142,7 @@ def create_request(text: str, config: Dict[str, str]) -> urllib.request.Request:
             {"role": "user", "content": text}
         ],
         "stream": True,
-        "temperature": 0.7,
+        "temperature": 0.0,
     }
 
     data = json.dumps(payload).encode("utf-8")
