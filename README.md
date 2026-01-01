@@ -14,7 +14,9 @@ Created with the help of [Sculptor](https://imbue.com/sculptor/).
 3. The LLM response will appear in a popup window.
 4. Press any key to close the popup window.
 
-![demo](https://files.catbox.moe/iqp5yq.gif)
+![demo](https://files.catbox.moe/i5cm9a.gif)
+
+![demo with selection](https://files.catbox.moe/f2zp6r.gif)
 
 
 ## Installation
