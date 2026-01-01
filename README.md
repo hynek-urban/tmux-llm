@@ -2,7 +2,7 @@
 
 A minimalist tmux plugin for getting quick responses to your terminal contents from an LLM assistant.
 
-Works with any openai-compatible API.
+Works with any openai-compatible API. Requires bash and python3.
 
 Created with the help of [Sculptor](https://imbue.com/sculptor/).
 
