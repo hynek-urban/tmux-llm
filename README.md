@@ -16,8 +16,6 @@ Created with the help of [Sculptor](https://imbue.com/sculptor/).
 
 ![demo](https://files.catbox.moe/i5cm9a.gif)
 
-![demo with selection](https://files.catbox.moe/f2zp6r.gif)
-
 
 ## Installation
 
@@ -75,7 +73,7 @@ set -g @tmux-llm-popup-height '60%'
 
 Just make sure to place these option declarations before the main plugin invocation point.
 
-## What gets actually sent to the LLM?
+## What is actually sent to the LLM?
 
 When you select text in tmux in copy-mode then the selected text
 is exactly what is sent to the LLM (aside from a generic system
@@ -88,3 +86,5 @@ Each invocation is isolated, there is no chat history.
 
 If you need to provide additional commentary to the LLM, do
 that by typing it directly in your terminal.
+
+![demo with selection](https://files.catbox.moe/f2zp6r.gif)
