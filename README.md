@@ -12,7 +12,7 @@ Created with the help of [Sculptor](https://imbue.com/sculptor/).
 1. (Optionally) Select text in a tmux pane (copy mode).
 2. Press `Ctrl+G` (or your configured key binding).
 3. The LLM response will appear in a popup window.
-4. Press any key to close the popup window.
+4. Press `q` to close the popup window.
 
 ![demo](https://files.catbox.moe/i5cm9a.gif)
 
