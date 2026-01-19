@@ -30,6 +30,8 @@ set -g @plugin 'hynek-urban/tmux-llm'
 
 Then press `prefix + I` to install.
 
+Alternatively, you can set the API key via the `TMUX_LLM_API_KEY` environment variable, which takes precedence over the tmux option (useful for keeping secrets out of config files).
+
 ### Manual Installation
 
 1. Clone this repository:
@@ -44,6 +46,8 @@ Then press `prefix + I` to install.
    ```
    
    (Ensure you replace the API key with your actual API key.)
+
+   Alternatively, you can set the API key via the `TMUX_LLM_API_KEY` environment variable, which takes precedence over the tmux option (useful for keeping secrets out of config files).
 
 3. Reload your tmux config:
    ```bash
@@ -72,6 +76,8 @@ set -g @tmux-llm-popup-height '60%'
 ```
 
 Just make sure to place these option declarations before the main plugin invocation point.
+
+**Environment variable precedence**: You can also set configuration via environment variables (`TMUX_LLM_API_KEY`, `TMUX_LLM_API_ENDPOINT`, `TMUX_LLM_MODEL`, `TMUX_LLM_POPUP_WIDTH`, `TMUX_LLM_POPUP_HEIGHT`). These take precedence over tmux options, which is especially useful for API keys (security) and temporary overrides.
 
 ## What is actually sent to the LLM?
 
