@@ -14,7 +14,7 @@ Created with the help of [Sculptor](https://imbue.com/sculptor/).
 3. The LLM response will appear in a popup window.
 4. Press `q` to close the popup window.
 
-![demo](https://github.com/user-attachments/assets/8b2dcaee-f911-4963-b178-c1f13ebfa2ce)
+![demo](https://github.com/user-attachments/assets/0d388bc5-7523-408b-8ea2-e1f095820685)
 
 
 ## Installation
@@ -93,4 +93,4 @@ Each invocation is isolated, there is no chat history.
 If you need to provide additional commentary to the LLM, do
 that by typing it directly in your terminal.
 
-![demo with selection](https://github.com/user-attachments/assets/0d388bc5-7523-408b-8ea2-e1f095820685)
+![demo with selection](https://github.com/user-attachments/assets/8b2dcaee-f911-4963-b178-c1f13ebfa2ce)
