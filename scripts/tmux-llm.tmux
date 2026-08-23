@@ -61,10 +61,10 @@ main() {
     tmux set-environment -g TMUX_LLM_POPUP_WIDTH "$popup_width"
     tmux set-environment -g TMUX_LLM_POPUP_HEIGHT "$popup_height"
     
-    # Bind the key to the shell script
-    tmux bind-key -n "$key_binding" run-shell "bash $CURRENT_DIR/tmux-llm.sh"
-    tmux bind-key -T copy-mode "$key_binding" send -X copy-pipe-and-cancel "bash $CURRENT_DIR/tmux-llm.sh"
-    tmux bind-key -T copy-mode-vi "$key_binding" send -X copy-pipe-and-cancel "bash $CURRENT_DIR/tmux-llm.sh"
+    # Pass the pane explicitly for nested tmux.
+    tmux bind-key -n "$key_binding" run-shell "bash '$CURRENT_DIR/tmux-llm.sh' '#{pane_id}'"
+    tmux bind-key -T copy-mode "$key_binding" send -X copy-pipe-and-cancel "bash '$CURRENT_DIR/tmux-llm.sh' '#{pane_id}'"
+    tmux bind-key -T copy-mode-vi "$key_binding" send -X copy-pipe-and-cancel "bash '$CURRENT_DIR/tmux-llm.sh' '#{pane_id}'"
 }
 
 main
